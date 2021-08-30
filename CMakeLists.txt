@@ -15,4 +15,5 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
     add_definitions(-DRELEASE)
 endif()
 
-add_executable(${PROJECT_NAME} src/main.cpp)
+file(GLOB_RECURSE SRCS src/*.cpp src/*.h)
+add_executable(${PROJECT_NAME} ${SRCS})
