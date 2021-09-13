@@ -1,13 +1,13 @@
 #!/bin/bash
 
 #WinDebug
-cmake -S . -B build/WinDebug -D CMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++\
+cmake -S . -B build/WinDebug -D CMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++-posix\
     -D CMAKE_BUILD_TYPE=Debug
 make -C build/WinDebug
 cp build/WinDebug/Gaem.exe bin/WinDebug/Gaem.exe
 
 #WinRelease
-cmake -S . -B build/WinRelease -D CMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++\
+cmake -S . -B build/WinRelease -D CMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++-posix\
     -D CMAKE_BUILD_TYPE=Release
 make -C build/WinRelease
 cp build/WinRelease/Gaem.exe bin/WinRelease/Gaem.exe
