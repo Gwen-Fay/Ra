@@ -50,3 +50,6 @@ Gaem
 
 #Build Folders
 [Bb][Uu][Ii][Ll][Dd]
+
+#ccls cache
+.ccls-cache
