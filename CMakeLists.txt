@@ -29,7 +29,7 @@ else()
         add_executable(${PROJECT_NAME} ${SRCS})
 
         target_link_libraries(${PROJECT_NAME} spdlog::spdlog)
-        add_definitions(-DDEBUG -O0)
+        add_definitions(-DDEBUG -O0 -g)
     elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
         file(GLOB_RECURSE SRCS src/*.cpp src/*.h src/*.hpp)
         list(FILTER SRCS EXCLUDE REGEX "test.cpp$")

@@ -15,4 +15,4 @@ cp build/LinDebug/Gaem bin/LinDebug/Gaem
 echo "=================="
 echo "  ~Running Gaem~  "
 echo "=================="
-bin/LinDebug/Gaem
+gdb bin/LinDebug/Gaem -ex 'run'
