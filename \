@@ -13,15 +13,13 @@ find_package(glm REQUIRED FATAL_ERROR)
 
 add_subdirectory(vendor/spdlog)
 add_subdirectory(vendor/glfw)
-add_subdirectory(vendor/catch2)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Test")
     file(GLOB_RECURSE SRCS src/*.cpp src/*.h src/*.hpp)
     list(FILTER SRCS EXCLUDE REGEX "main.cpp$")
     add_executable(tests ${SRCS})
-        
-    target_include_directories(tests PUBLIC vendor/catch2/include)
-    add_definitions(-O0)
+    
+    target_include_directories(${PROJECT_NAME} PUBLIC vendor/catch2/include)
 else()
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         file(GLOB_RECURSE SRCS src/*.cpp src/*.h src/*.hpp)
