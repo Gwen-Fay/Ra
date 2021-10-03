@@ -1,5 +1,22 @@
 #!/bin/bash
 
+#SHADER BUILD
+err=false
+
+for f in src/shaders/*.frag; 
+do
+    glslc $f -o "${f}.spv" || err=true
+done
+
+for f in src/shaders/*.vert; 
+do
+    glslc $f -o "${f}.spv" || err=true
+done
+
+if [ "$err" = true ] ; then
+    exit 1
+fi
+
 # TEST BUILD
 cmake -S . -B build/LinTest -D CMAKE_CXX_COMPILER=g++\
     -D CMAKE_BUILD_TYPE=Test -D PLATFORM="LINUX" || exit 1
@@ -16,3 +33,5 @@ echo "=================="
 echo "  ~Running Gaem~  "
 echo "=================="
 gdb bin/LinDebug/Gaem -ex 'run'
+
+exit 0

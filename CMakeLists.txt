@@ -43,7 +43,7 @@ else()
     
         add_definitions(-DRELEASE -02)
     endif()
-    
+
     target_include_directories(${PROJECT_NAME} PUBLIC vendor/spdlog/include)
     target_include_directories(${PROJECT_NAME} PUBLIC vendor/glfw/include)
 
@@ -58,3 +58,4 @@ if(PLATFORM STREQUAL "WINDOWS")
 elseif(PLATFORM STREQUAL "LINUX")
     add_definitions(-DLINUX)
 endif()
+
