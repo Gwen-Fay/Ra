@@ -1,6 +1,11 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
+/**
+ * Catch2 Tests are all located here (if aditional cpp files are needed,
+ * reformat this to test01.cpp, test02.cpp, ... etc)
+ */
+
 int AddOne(int x) { return x + 1; }
 
 TEST_CASE("Add one Test") {

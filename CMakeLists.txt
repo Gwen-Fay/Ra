@@ -22,6 +22,12 @@ if(CMAKE_BUILD_TYPE STREQUAL "Test")
         
     target_include_directories(tests PUBLIC vendor/catch2/include)
     add_definitions(-O0)
+    
+    target_include_directories(tests PUBLIC vendor/spdlog/include)
+    target_include_directories(tests PUBLIC vendor/glfw/include)
+
+    target_link_libraries(tests glfw ${GLFW_LIBRARIES})
+    target_link_libraries(tests vulkan)
 else()
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         file(GLOB_RECURSE SRCS src/*.cpp src/*.h src/*.hpp)
@@ -37,12 +43,15 @@ else()
     
         add_definitions(-DRELEASE -02)
     endif()
+    
     target_include_directories(${PROJECT_NAME} PUBLIC vendor/spdlog/include)
     target_include_directories(${PROJECT_NAME} PUBLIC vendor/glfw/include)
 
     target_link_libraries(${PROJECT_NAME} glfw ${GLFW_LIBRARIES})
     target_link_libraries(${PROJECT_NAME} vulkan)
+
 endif()
+
 
 if(PLATFORM STREQUAL "WINDOWS")
     add_definitions(-DWINDOWS)

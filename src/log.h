@@ -1,5 +1,9 @@
 #pragma once
 
+/**
+ * spdlog wrapper. Will only log if DEBUG is defined by the compiler
+ */
+
 #ifdef DEBUG
 
 #include <spdlog/spdlog.h>
@@ -13,9 +17,7 @@
 #define LOG_DEBUG(...) spdlog::debug(__VA_ARGS__)
 #define LOG_TRACE(...) spdlog::trace(__VA_ARGS__)
 
-#endif
-
-#ifdef RELEASE
+#else
 
 #define LOG_INIT
 #define LOG_INFO(...)
