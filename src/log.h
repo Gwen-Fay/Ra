@@ -1,8 +1,8 @@
-#pragma once
-
 /**
  * spdlog wrapper. Will only log if DEBUG is defined by the compiler
  */
+
+#pragma once
 
 #ifdef DEBUG
 

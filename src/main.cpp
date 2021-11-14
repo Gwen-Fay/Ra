@@ -1,3 +1,13 @@
+/**
+ *
+ * Main function
+ *
+ * Creates an app and runs it.
+ *
+ * TODO compile flags to chose which app to run (level editor, game, etc.)
+ *
+ */
+
 #include "exampleApp.hpp"
 #include "log.h"
 

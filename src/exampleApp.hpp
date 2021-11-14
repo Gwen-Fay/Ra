@@ -1,9 +1,11 @@
+/**
+ *
+ * This is a simple example Application which manages and updates a window
+ *
+ */
+
 #pragma once
 #include "window.hpp"
-
-/**
- * This is a simple example Application which manages and updates a window
- */
 
 namespace gaem {
 

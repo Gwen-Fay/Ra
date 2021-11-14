@@ -1,14 +1,16 @@
+/**
+ *
+ * Window is the abstract class for all window wrappers. this way I can in
+ * the future swap out GLFW if I want to.
+ *
+ */
+
 #pragma once
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 #include <string>
-
-/**
- * Window is the abstract class for all window wrappers. this way I can in
- * the future swap out GLFW if I want to.
- */
 
 namespace gaem {
 class Window {
@@ -27,7 +29,7 @@ class Window {
 };
 
 /**
- * GLFW window wrapper. all glfw calls belong here.
+ * GLFW window wrapper.
  */
 
 class WindowGlfw : public Window {
