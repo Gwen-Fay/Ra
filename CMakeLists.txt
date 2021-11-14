@@ -41,7 +41,7 @@ else()
         list(FILTER SRCS EXCLUDE REGEX "test.cpp$")
         add_executable(${PROJECT_NAME} ${SRCS})
     
-        add_definitions(-DRELEASE -02)
+        add_definitions(-DRELEASE -O2)
     endif()
 
     target_include_directories(${PROJECT_NAME} PUBLIC vendor/spdlog/include)

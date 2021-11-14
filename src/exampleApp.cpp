@@ -2,8 +2,8 @@
 
 namespace gaem {
 void ExampleApp::run() {
-    while (window.isRunning()) {
-        window.updateWindow();
-    }
+  while (window.isRunning()) {
+    window.updateWindow();
+  }
 }
 } // namespace gaem
