@@ -14,18 +14,20 @@
 
 namespace gaem {
 class Window {
-  public:
-    Window(){};
-    virtual ~Window(){};
-    Window(const Window &) = delete;
-    Window &operator=(const Window &) = delete;
-    bool isRunning();
-    virtual void updateWindow() = 0;
+public:
+  Window(){};
+  virtual ~Window(){};
+  Window(const Window &) = delete;
+  Window &operator=(const Window &) = delete;
+  bool isRunning();
+  virtual void updateWindow() = 0;
+  virtual void createWindowSurface(VkInstance instance,
+                                   VkSurfaceKHR *surface) = 0;
 
-  protected:
-    virtual int initWindow() = 0;
+protected:
+  virtual int initWindow() = 0;
 
-    bool running = true;
+  bool running = true;
 };
 
 /**
@@ -33,18 +35,22 @@ class Window {
  */
 
 class WindowGlfw : public Window {
-  public:
-    WindowGlfw(int w, int h, std::string name);
-    ~WindowGlfw();
-    WindowGlfw(const WindowGlfw &) = delete;
-    WindowGlfw &operator=(const WindowGlfw &) = delete;
-    void updateWindow() override;
+public:
+  WindowGlfw(int w, int h, std::string name);
+  ~WindowGlfw();
+  WindowGlfw(const WindowGlfw &) = delete;
+  WindowGlfw &operator=(const WindowGlfw &) = delete;
+  void updateWindow() override;
+  void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface) override;
+  VkExtent2D getExtent() {
+    return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
+  }
 
-  protected:
-    int initWindow() override;
-    const int width;
-    const int height;
-    std::string windowName;
-    GLFWwindow *window;
+protected:
+  int initWindow() override;
+  const int width;
+  const int height;
+  std::string windowName;
+  GLFWwindow *window;
 };
 } // namespace gaem

@@ -5,20 +5,41 @@
  */
 
 #pragma once
+
+#include "device.hpp"
 #include "pipeline.hpp"
+#include "swapChain.hpp"
 #include "window.hpp"
+
+#include <memory>
+#include <vector>
 
 namespace gaem {
 
 class ExampleApp {
 public:
-  static constexpr int WIDTH = 800;
-  static constexpr int HEIGHT = 600;
+  ExampleApp();
+  ~ExampleApp();
+  ExampleApp(const ExampleApp &) = delete;
+  ExampleApp &operator=(const ExampleApp &) = delete;
+
   void run();
 
+  static constexpr int WIDTH = 800;
+  static constexpr int HEIGHT = 600;
+
 private:
+  void createPipelineLayout();
+  void createPipeline();
+  void createCommandBuffers();
+  void drawFrame();
+
   WindowGlfw window{WIDTH, HEIGHT, "Hello Vulkan"};
-  Pipeline pipeline{"example.vert", "example.frag"};
+  Device device{window};
+  SwapChain swapChain{device, window.getExtent()};
+  std::unique_ptr<Pipeline> pipeline;
+  VkPipelineLayout pipelineLayout;
+  std::vector<VkCommandBuffer> commandBuffers;
 };
 
 } // namespace gaem

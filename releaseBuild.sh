@@ -26,4 +26,6 @@ cmake -S . -B build/LinRelease -D CMAKE_CXX_COMPILER=g++\
 make -C build/LinRelease || exit 1
 mkdir -p bin/LinRelease
 cp build/LinRelease/Gaem bin/LinRelease/Gaem
+rm bin/LinRelease/shaders
 mv src/shaders/build_shaders bin/LinRelease/shaders
+rm src/shaders/build_shaders
