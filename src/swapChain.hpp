@@ -1,3 +1,8 @@
+/**
+ *  SwapChain abstracts all the vulkan code relating to rendering buffers and
+ *  swaping them (double or triple buffering)
+ */
+
 #pragma once
 
 #include "device.hpp"

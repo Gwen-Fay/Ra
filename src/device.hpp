@@ -1,3 +1,7 @@
+/**
+ *  Device class abstracts all vulkan code relating to the graphics card.
+ */
+
 #pragma once
 
 #include "window.hpp"
