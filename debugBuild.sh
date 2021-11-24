@@ -25,7 +25,7 @@ echo "  ~Testing Gaem~  "
 echo ".................."
 
 # TEST BUILD
-cmake -S . -B build/LinTest -D CMAKE_CXX_COMPILER=g++\
+cmake -S . -B build/LinTest -D CMAKE_CXX_COMPILER=clang++\
     -D CMAKE_BUILD_TYPE=Test -D PLATFORM="LINUX" || exit 1
 make -C build/LinTest || exit 1
 build/LinTest/tests || exit 1
@@ -35,7 +35,7 @@ echo "  ~Building Gaem~  "
 echo "-------------------"
 
 #DEBUG BUILD
-cmake -S . -B build/LinDebug -D CMAKE_CXX_COMPILER=g++\
+cmake -S . -B build/LinDebug -D CMAKE_CXX_COMPILER=clang++\
     -D CMAKE_BUILD_TYPE=Debug -D PLATFORM="LINUX" || exit 1
 make -C build/LinDebug || exit 1
 mkdir -p bin/LinDebug
@@ -48,6 +48,6 @@ echo "=================="
 echo "  ~Running Gaem~  "
 echo "=================="
 cd bin/LinDebug
-gdb Gaem -ex 'run'
+lldb Gaem -o r
 
 exit 0

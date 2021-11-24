@@ -21,7 +21,7 @@ mkdir -p src/shaders/build_shaders
 mv src/shaders/*.spv src/shaders/build_shaders/
 
 #RELEASE BUILD
-cmake -S . -B build/LinRelease -D CMAKE_CXX_COMPILER=g++\
+cmake -S . -B build/LinRelease -D CMAKE_CXX_COMPILER=clang++\
     -D CMAKE_BUILD_TYPE=Release -D PLATFORM="LINUX"|| exit 1
 make -C build/LinRelease || exit 1
 mkdir -p bin/LinRelease
