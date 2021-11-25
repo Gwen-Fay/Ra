@@ -1,10 +1,10 @@
 /**
- *  Device class abstracts all vulkan code relating to the graphics card.
+ *  GaemDevice class abstracts all vulkan code relating to the graphics card.
  */
 
 #pragma once
 
-#include "window.hpp"
+#include "gaem_window.hpp"
 
 #include <string>
 #include <vector>
@@ -32,7 +32,7 @@ struct QueueFamilyIndices {
   bool isComplete() { return graphicsFamilyHasValue && presentFamilyHasValue; }
 };
 
-class Device {
+class GaemDevice {
 public:
 #ifdef NDEBUG
   const bool enableValidationLayers = false;
@@ -40,14 +40,14 @@ public:
   const bool enableValidationLayers = true;
 #endif
 
-  Device(Window &window);
-  ~Device();
+  GaemDevice(GaemWindow &gaemWindow);
+  ~GaemDevice();
 
   // Not copyable or movable
-  Device(const Device &) = delete;
-  void operator=(const Device &) = delete;
-  Device(Device &&) = delete;
-  Device &operator=(Device &&) = delete;
+  GaemDevice(const GaemDevice &) = delete;
+  void operator=(const GaemDevice &) = delete;
+  GaemDevice(GaemDevice &&) = delete;
+  GaemDevice &operator=(GaemDevice &&) = delete;
 
   VkCommandPool getCommandPool() { return commandPool; }
   VkDevice device() { return device_; }
@@ -105,7 +105,7 @@ private:
   VkInstance instance;
   VkDebugUtilsMessengerEXT debugMessenger;
   VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-  Window &window;
+  GaemWindow &gaemWindow;
   VkCommandPool commandPool;
 
   VkDevice device_;

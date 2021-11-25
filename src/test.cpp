@@ -13,6 +13,6 @@
 int AddOne(int x) { return x + 1; }
 
 TEST_CASE("Add one Test") {
-    REQUIRE(AddOne(1) == 2);
-    REQUIRE(AddOne(2) == 3);
+  REQUIRE(AddOne(1) == 2);
+  REQUIRE(AddOne(2) == 3);
 }

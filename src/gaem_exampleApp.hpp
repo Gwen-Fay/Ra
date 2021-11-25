@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include "device.hpp"
-#include "model.hpp"
-#include "pipeline.hpp"
-#include "swapChain.hpp"
-#include "window.hpp"
+#include "gaem_device.hpp"
+#include "gaem_model.hpp"
+#include "gaem_pipeline.hpp"
+#include "gaem_swapChain.hpp"
+#include "gaem_window.hpp"
 
 #include <memory>
 #include <vector>
@@ -37,12 +37,12 @@ private:
   void drawFrame();
 
   WindowGlfw window{WIDTH, HEIGHT, "Hello Vulkan"};
-  Device device{window};
-  SwapChain swapChain{device, window.getExtent()};
-  std::unique_ptr<Pipeline> pipeline;
+  GaemDevice device{window};
+  GaemSwapChain gaemSwapChain{device, window.getExtent()};
+  std::unique_ptr<GaemPipeline> gaemPipeline;
   VkPipelineLayout pipelineLayout;
   std::vector<VkCommandBuffer> commandBuffers;
-  std::unique_ptr<Model> model;
+  std::unique_ptr<GaemModel> model;
 };
 
 } // namespace gaem

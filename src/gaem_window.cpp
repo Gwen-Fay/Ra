@@ -1,11 +1,11 @@
-#include "window.hpp"
-#include "log.h"
+#include "gaem_window.hpp"
+#include "gaem_log.hpp"
 
 #include <stdexcept>
 
 namespace gaem {
 
-bool Window::isRunning() { return running; }
+bool GaemWindow::isRunning() { return running; }
 
 WindowGlfw::WindowGlfw(int w, int h, std::string name)
     : width{w}, height{h}, windowName{name} {

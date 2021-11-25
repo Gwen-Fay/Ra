@@ -8,7 +8,7 @@
  */
 
 #pragma once
-#include "device.hpp"
+#include "gaem_device.hpp"
 
 #include <string>
 #include <vector>
@@ -34,14 +34,14 @@ struct PipelineConfig {
   uint32_t subpass = 0;
 };
 
-class Pipeline {
+class GaemPipeline {
 public:
-  Pipeline(Device &device, const std::string &vertName,
-           const std::string &fragName, const PipelineConfig &config);
-  ~Pipeline();
+  GaemPipeline(GaemDevice &gaemDevice, const std::string &vertName,
+               const std::string &fragName, const PipelineConfig &config);
+  ~GaemPipeline();
 
-  Pipeline(const Pipeline &) = delete;
-  void operator=(const Pipeline &) = delete;
+  GaemPipeline(const GaemPipeline &) = delete;
+  void operator=(const GaemPipeline &) = delete;
 
   void bind(VkCommandBuffer commandBuffer);
 
@@ -60,7 +60,7 @@ private:
   const std::string SHADER_PATH = "shaders/";
   const std::string SHADER_EXT = ".spv";
 
-  Device &device;
+  GaemDevice &gaemDevice;
   VkPipeline graphicsPipeline;
   VkShaderModule vertShaderModule;
   VkShaderModule fragShaderModule;

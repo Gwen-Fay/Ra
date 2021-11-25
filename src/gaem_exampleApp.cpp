@@ -1,5 +1,5 @@
-#include "exampleApp.hpp"
-#include "log.h"
+#include "gaem_exampleApp.hpp"
+#include "gaem_log.hpp"
 
 #include <array>
 #include <stdexcept>
@@ -40,16 +40,16 @@ void ExampleApp::createPipelineLayout() {
 }
 void ExampleApp::createPipeline() {
   PipelineConfig pipelineConfig{};
-  Pipeline::defaultPipelineConfig(pipelineConfig, swapChain.width(),
-                                  swapChain.height());
-  pipelineConfig.renderPass = swapChain.getRenderPass();
+  GaemPipeline::defaultPipelineConfig(pipelineConfig, gaemSwapChain.width(),
+                                      gaemSwapChain.height());
+  pipelineConfig.renderPass = gaemSwapChain.getRenderPass();
   pipelineConfig.pipelineLayout = pipelineLayout;
-  pipeline = std::make_unique<Pipeline>(device, "example.vert", "example.frag",
-                                        pipelineConfig);
+  gaemPipeline = std::make_unique<GaemPipeline>(device, "example.vert",
+                                                "example.frag", pipelineConfig);
 }
 
 void ExampleApp::createCommandBuffers() {
-  commandBuffers.resize(swapChain.imageCount());
+  commandBuffers.resize(gaemSwapChain.imageCount());
   VkCommandBufferAllocateInfo allocInfo{};
   allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
   allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -73,11 +73,11 @@ void ExampleApp::createCommandBuffers() {
 
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassInfo.renderPass = swapChain.getRenderPass();
-    renderPassInfo.framebuffer = swapChain.getFrameBuffer(i);
+    renderPassInfo.renderPass = gaemSwapChain.getRenderPass();
+    renderPassInfo.framebuffer = gaemSwapChain.getFrameBuffer(i);
 
     renderPassInfo.renderArea.offset = {0, 0};
-    renderPassInfo.renderArea.extent = swapChain.getSwapChainExtent();
+    renderPassInfo.renderArea.extent = gaemSwapChain.getSwapChainExtent();
 
     std::array<VkClearValue, 2> clearValues{};
     clearValues[0].color = {0.1f, 0.1f, 0.1f, 1.0f};
@@ -87,7 +87,7 @@ void ExampleApp::createCommandBuffers() {
 
     vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo,
                          VK_SUBPASS_CONTENTS_INLINE);
-    pipeline->bind(commandBuffers[i]);
+    gaemPipeline->bind(commandBuffers[i]);
     model->bind(commandBuffers[i]);
     model->draw(commandBuffers[i]);
 
@@ -101,7 +101,7 @@ void ExampleApp::createCommandBuffers() {
 
 void ExampleApp::drawFrame() {
   uint32_t imageIndex;
-  auto result = swapChain.acquireNextImage(&imageIndex);
+  auto result = gaemSwapChain.acquireNextImage(&imageIndex);
 
   if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
     // TODO handle this differently, it can happen when window is resized
@@ -109,8 +109,8 @@ void ExampleApp::drawFrame() {
     throw std::runtime_error("failed to acquire swap chain image");
   }
 
-  result =
-      swapChain.submitCommandBuffers(&commandBuffers[imageIndex], &imageIndex);
+  result = gaemSwapChain.submitCommandBuffers(&commandBuffers[imageIndex],
+                                              &imageIndex);
   if (result != VK_SUCCESS) {
     LOG_CRITICAL("FAILED to present swap chain image!");
     throw std::runtime_error("failed to present swap chain image");
@@ -118,10 +118,10 @@ void ExampleApp::drawFrame() {
 }
 
 void ExampleApp::loadModels() {
-  std::vector<Model::Vertex> vertices{
+  std::vector<GaemModel::Vertex> vertices{
       {{0.0f, -0.5f}}, {{0.5f, 0.5f}}, {{-0.5f, 0.5f}}};
 
-  model = std::make_unique<Model>(device, vertices);
+  model = std::make_unique<GaemModel>(device, vertices);
 }
 
 } // namespace gaem

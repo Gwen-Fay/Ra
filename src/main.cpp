@@ -8,8 +8,8 @@
  *
  */
 
-#include "exampleApp.hpp"
-#include "log.h"
+#include "gaem_exampleApp.hpp"
+#include "gaem_log.hpp"
 
 #include <cstdlib>
 #include <iostream>

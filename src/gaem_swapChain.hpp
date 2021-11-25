@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "device.hpp"
+#include "gaem_device.hpp"
 
 // vulkan headers
 #include <vulkan/vulkan.h>
@@ -16,15 +16,15 @@
 
 namespace gaem {
 
-class SwapChain {
+class GaemSwapChain {
 public:
   static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
-  SwapChain(Device &deviceRef, VkExtent2D windowExtent);
-  ~SwapChain();
+  GaemSwapChain(GaemDevice &deviceRef, VkExtent2D windowExtent);
+  ~GaemSwapChain();
 
-  SwapChain(const SwapChain &) = delete;
-  void operator=(const SwapChain &) = delete;
+  GaemSwapChain(const GaemSwapChain &) = delete;
+  void operator=(const GaemSwapChain &) = delete;
 
   VkFramebuffer getFrameBuffer(int index) {
     return swapChainFramebuffers[index];
@@ -74,7 +74,7 @@ private:
   std::vector<VkImage> swapChainImages;
   std::vector<VkImageView> swapChainImageViews;
 
-  Device &device;
+  GaemDevice &gaemDevice;
   VkExtent2D windowExtent;
 
   VkSwapchainKHR swapChain;

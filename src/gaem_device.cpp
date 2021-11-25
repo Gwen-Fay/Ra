@@ -1,4 +1,4 @@
-#include "device.hpp"
+#include "gaem_device.hpp"
 
 // std headers
 #include <cstring>
@@ -43,7 +43,7 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance,
 }
 
 // class member functions
-Device::Device(Window &window) : window{window} {
+GaemDevice::GaemDevice(GaemWindow &gaemWindow) : gaemWindow{gaemWindow} {
   createInstance();
   SETUP_DEBUG_MESSENGER();
   createSurface();
@@ -52,7 +52,7 @@ Device::Device(Window &window) : window{window} {
   createCommandPool();
 }
 
-Device::~Device() {
+GaemDevice::~GaemDevice() {
   vkDestroyCommandPool(device_, commandPool, nullptr);
   vkDestroyDevice(device_, nullptr);
 
@@ -64,7 +64,7 @@ Device::~Device() {
   vkDestroyInstance(instance, nullptr);
 }
 
-void Device::createInstance() {
+void GaemDevice::createInstance() {
   if (enableValidationLayers && !checkValidationLayerSupport()) {
     throw std::runtime_error("validation layers requested, but not available!");
   }
@@ -105,7 +105,7 @@ void Device::createInstance() {
   hasGflwRequiredInstanceExtensions();
 }
 
-void Device::pickPhysicalDevice() {
+void GaemDevice::pickPhysicalDevice() {
   uint32_t deviceCount = 0;
   vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
   if (deviceCount == 0) {
@@ -130,7 +130,7 @@ void Device::pickPhysicalDevice() {
   std::cout << "physical device: " << properties.deviceName << std::endl;
 }
 
-void Device::createLogicalDevice() {
+void GaemDevice::createLogicalDevice() {
   QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
   std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -181,7 +181,7 @@ void Device::createLogicalDevice() {
   vkGetDeviceQueue(device_, indices.presentFamily, 0, &presentQueue_);
 }
 
-void Device::createCommandPool() {
+void GaemDevice::createCommandPool() {
   QueueFamilyIndices queueFamilyIndices = findPhysicalQueueFamilies();
 
   VkCommandPoolCreateInfo poolInfo = {};
@@ -196,11 +196,11 @@ void Device::createCommandPool() {
   }
 }
 
-void Device::createSurface() {
-  window.createWindowSurface(instance, &surface_);
+void GaemDevice::createSurface() {
+  gaemWindow.createWindowSurface(instance, &surface_);
 }
 
-bool Device::isDeviceSuitable(VkPhysicalDevice device) {
+bool GaemDevice::isDeviceSuitable(VkPhysicalDevice device) {
   QueueFamilyIndices indices = findQueueFamilies(device);
 
   bool extensionsSupported = checkDeviceExtensionSupport(device);
@@ -219,7 +219,7 @@ bool Device::isDeviceSuitable(VkPhysicalDevice device) {
          supportedFeatures.samplerAnisotropy;
 }
 
-void Device::populateDebugMessengerCreateInfo(
+void GaemDevice::populateDebugMessengerCreateInfo(
     VkDebugUtilsMessengerCreateInfoEXT &createInfo) {
   createInfo = {};
   createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -232,7 +232,7 @@ void Device::populateDebugMessengerCreateInfo(
   createInfo.pUserData = nullptr; // Optional
 }
 
-void Device::setupDebugMessenger() {
+void GaemDevice::setupDebugMessenger() {
   if (!enableValidationLayers)
     return;
   VkDebugUtilsMessengerCreateInfoEXT createInfo;
@@ -243,7 +243,7 @@ void Device::setupDebugMessenger() {
   }
 }
 
-bool Device::checkValidationLayerSupport() {
+bool GaemDevice::checkValidationLayerSupport() {
   uint32_t layerCount;
   vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
@@ -268,7 +268,7 @@ bool Device::checkValidationLayerSupport() {
   return true;
 }
 
-std::vector<const char *> Device::getRequiredExtensions() {
+std::vector<const char *> GaemDevice::getRequiredExtensions() {
   uint32_t glfwExtensionCount = 0;
   const char **glfwExtensions;
   glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -283,7 +283,7 @@ std::vector<const char *> Device::getRequiredExtensions() {
   return extensions;
 }
 
-void Device::hasGflwRequiredInstanceExtensions() {
+void GaemDevice::hasGflwRequiredInstanceExtensions() {
   uint32_t extensionCount = 0;
   vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
   std::vector<VkExtensionProperties> extensions(extensionCount);
@@ -307,7 +307,7 @@ void Device::hasGflwRequiredInstanceExtensions() {
   }
 }
 
-bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device) {
+bool GaemDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) {
   uint32_t extensionCount;
   vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount,
                                        nullptr);
@@ -326,7 +326,7 @@ bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device) {
   return requiredExtensions.empty();
 }
 
-QueueFamilyIndices Device::findQueueFamilies(VkPhysicalDevice device) {
+QueueFamilyIndices GaemDevice::findQueueFamilies(VkPhysicalDevice device) {
   QueueFamilyIndices indices;
 
   uint32_t queueFamilyCount = 0;
@@ -359,7 +359,8 @@ QueueFamilyIndices Device::findQueueFamilies(VkPhysicalDevice device) {
   return indices;
 }
 
-SwapChainSupportDetails Device::querySwapChainSupport(VkPhysicalDevice device) {
+SwapChainSupportDetails
+GaemDevice::querySwapChainSupport(VkPhysicalDevice device) {
   SwapChainSupportDetails details;
   vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface_,
                                             &details.capabilities);
@@ -385,9 +386,10 @@ SwapChainSupportDetails Device::querySwapChainSupport(VkPhysicalDevice device) {
   return details;
 }
 
-VkFormat Device::findSupportedFormat(const std::vector<VkFormat> &candidates,
-                                     VkImageTiling tiling,
-                                     VkFormatFeatureFlags features) {
+VkFormat
+GaemDevice::findSupportedFormat(const std::vector<VkFormat> &candidates,
+                                VkImageTiling tiling,
+                                VkFormatFeatureFlags features) {
   for (VkFormat format : candidates) {
     VkFormatProperties props;
     vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &props);
@@ -403,8 +405,8 @@ VkFormat Device::findSupportedFormat(const std::vector<VkFormat> &candidates,
   throw std::runtime_error("failed to find supported format!");
 }
 
-uint32_t Device::findMemoryType(uint32_t typeFilter,
-                                VkMemoryPropertyFlags properties) {
+uint32_t GaemDevice::findMemoryType(uint32_t typeFilter,
+                                    VkMemoryPropertyFlags properties) {
   VkPhysicalDeviceMemoryProperties memProperties;
   vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
   for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
@@ -417,9 +419,9 @@ uint32_t Device::findMemoryType(uint32_t typeFilter,
   throw std::runtime_error("failed to find suitable memory type!");
 }
 
-void Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
-                          VkMemoryPropertyFlags properties, VkBuffer &buffer,
-                          VkDeviceMemory &bufferMemory) {
+void GaemDevice::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
+                              VkMemoryPropertyFlags properties,
+                              VkBuffer &buffer, VkDeviceMemory &bufferMemory) {
   VkBufferCreateInfo bufferInfo{};
   bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
   bufferInfo.size = size;
@@ -447,7 +449,7 @@ void Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
   vkBindBufferMemory(device_, buffer, bufferMemory, 0);
 }
 
-VkCommandBuffer Device::beginSingleTimeCommands() {
+VkCommandBuffer GaemDevice::beginSingleTimeCommands() {
   VkCommandBufferAllocateInfo allocInfo{};
   allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
   allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -465,7 +467,7 @@ VkCommandBuffer Device::beginSingleTimeCommands() {
   return commandBuffer;
 }
 
-void Device::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
+void GaemDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
   vkEndCommandBuffer(commandBuffer);
 
   VkSubmitInfo submitInfo{};
@@ -479,8 +481,8 @@ void Device::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
   vkFreeCommandBuffers(device_, commandPool, 1, &commandBuffer);
 }
 
-void Device::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
-                        VkDeviceSize size) {
+void GaemDevice::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
+                            VkDeviceSize size) {
   VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
   VkBufferCopy copyRegion{};
@@ -492,8 +494,9 @@ void Device::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
   endSingleTimeCommands(commandBuffer);
 }
 
-void Device::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width,
-                               uint32_t height, uint32_t layerCount) {
+void GaemDevice::copyBufferToImage(VkBuffer buffer, VkImage image,
+                                   uint32_t width, uint32_t height,
+                                   uint32_t layerCount) {
   VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
   VkBufferImageCopy region{};
@@ -514,9 +517,10 @@ void Device::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width,
   endSingleTimeCommands(commandBuffer);
 }
 
-void Device::createImageWithInfo(const VkImageCreateInfo &imageInfo,
-                                 VkMemoryPropertyFlags properties,
-                                 VkImage &image, VkDeviceMemory &imageMemory) {
+void GaemDevice::createImageWithInfo(const VkImageCreateInfo &imageInfo,
+                                     VkMemoryPropertyFlags properties,
+                                     VkImage &image,
+                                     VkDeviceMemory &imageMemory) {
   if (vkCreateImage(device_, &imageInfo, nullptr, &image) != VK_SUCCESS) {
     throw std::runtime_error("failed to create image!");
   }

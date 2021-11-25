@@ -13,12 +13,12 @@
 #include <string>
 
 namespace gaem {
-class Window {
+class GaemWindow {
 public:
-  Window(){};
-  virtual ~Window(){};
-  Window(const Window &) = delete;
-  Window &operator=(const Window &) = delete;
+  GaemWindow(){};
+  virtual ~GaemWindow(){};
+  GaemWindow(const GaemWindow &) = delete;
+  GaemWindow &operator=(const GaemWindow &) = delete;
   bool isRunning();
   virtual void updateWindow() = 0;
   virtual void createWindowSurface(VkInstance instance,
@@ -34,7 +34,7 @@ protected:
  * GLFW window wrapper.
  */
 
-class WindowGlfw : public Window {
+class WindowGlfw : public GaemWindow {
 public:
   WindowGlfw(int w, int h, std::string name);
   ~WindowGlfw();

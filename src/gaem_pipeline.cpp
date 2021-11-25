@@ -1,7 +1,7 @@
-#include "pipeline.hpp"
-#include "model.hpp"
+#include "gaem_pipeline.hpp"
+#include "gaem_model.hpp"
 
-#include "log.h"
+#include "gaem_log.hpp"
 
 #include <cassert>
 #include <fstream>
@@ -10,21 +10,22 @@
 
 namespace gaem {
 
-Pipeline::Pipeline(Device &device, const std::string &vertName,
-                   const std::string &fragName, const PipelineConfig &config)
-    : device{device} {
+GaemPipeline::GaemPipeline(GaemDevice &gaemDevice, const std::string &vertName,
+                           const std::string &fragName,
+                           const PipelineConfig &config)
+    : gaemDevice{gaemDevice} {
 
   createGraphicsPipeline(SHADER_PATH + vertName + SHADER_EXT,
                          SHADER_PATH + fragName + SHADER_EXT, config);
 }
 
-Pipeline::~Pipeline() {
-  vkDestroyShaderModule(device.device(), vertShaderModule, nullptr);
-  vkDestroyShaderModule(device.device(), fragShaderModule, nullptr);
-  vkDestroyPipeline(device.device(), graphicsPipeline, nullptr);
+GaemPipeline::~GaemPipeline() {
+  vkDestroyShaderModule(gaemDevice.device(), vertShaderModule, nullptr);
+  vkDestroyShaderModule(gaemDevice.device(), fragShaderModule, nullptr);
+  vkDestroyPipeline(gaemDevice.device(), graphicsPipeline, nullptr);
 }
 
-std::vector<char> Pipeline::readFile(const std::string &filePath) {
+std::vector<char> GaemPipeline::readFile(const std::string &filePath) {
 
   std::ifstream file{filePath, std::ios::ate | std::ios::binary};
 
@@ -43,9 +44,9 @@ std::vector<char> Pipeline::readFile(const std::string &filePath) {
   return buffer;
 }
 
-void Pipeline::createGraphicsPipeline(const std::string &vertPath,
-                                      const std::string &fragPath,
-                                      const PipelineConfig &config) {
+void GaemPipeline::createGraphicsPipeline(const std::string &vertPath,
+                                          const std::string &fragPath,
+                                          const PipelineConfig &config) {
   assert(
       config.pipelineLayout != VK_NULL_HANDLE &&
       "Cannot create graphics pipeline::no pipelineLayout provided in config");
@@ -75,8 +76,8 @@ void Pipeline::createGraphicsPipeline(const std::string &vertPath,
   shaderStages[1].pNext = nullptr;
   shaderStages[1].pSpecializationInfo = nullptr;
 
-  auto bindingDescriptions = Model::Vertex::getBindingDescriptions();
-  auto attributeDescriptions = Model::Vertex::getAtributeDescriptions();
+  auto bindingDescriptions = GaemModel::Vertex::getBindingDescriptions();
+  auto attributeDescriptions = GaemModel::Vertex::getAtributeDescriptions();
   VkPipelineVertexInputStateCreateInfo vertInputInfo{};
   vertInputInfo.sType =
       VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -107,7 +108,7 @@ void Pipeline::createGraphicsPipeline(const std::string &vertPath,
   pipelineInfo.basePipelineIndex = -1;
   pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-  if (vkCreateGraphicsPipelines(device.device(), VK_NULL_HANDLE, 1,
+  if (vkCreateGraphicsPipelines(gaemDevice.device(), VK_NULL_HANDLE, 1,
                                 &pipelineInfo, nullptr,
                                 &graphicsPipeline) != VK_SUCCESS) {
     LOG_CRITICAL("FAILED to create graphics pipeline!");
@@ -115,27 +116,27 @@ void Pipeline::createGraphicsPipeline(const std::string &vertPath,
   }
 }
 
-void Pipeline::createShaderModule(const std::vector<char> &code,
-                                  VkShaderModule *shaderModule) {
+void GaemPipeline::createShaderModule(const std::vector<char> &code,
+                                      VkShaderModule *shaderModule) {
   VkShaderModuleCreateInfo createInfo{};
   createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
   createInfo.codeSize = code.size();
   createInfo.pCode = reinterpret_cast<const uint32_t *>(code.data());
 
-  if (vkCreateShaderModule(device.device(), &createInfo, nullptr,
+  if (vkCreateShaderModule(gaemDevice.device(), &createInfo, nullptr,
                            shaderModule) != VK_SUCCESS) {
     LOG_CRITICAL("FAILED to create shader module!");
     throw std::runtime_error("failed to create shader module");
   }
 }
 
-void Pipeline::bind(VkCommandBuffer commandBuffer) {
+void GaemPipeline::bind(VkCommandBuffer commandBuffer) {
   vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                     graphicsPipeline);
 }
 
-void Pipeline::defaultPipelineConfig(PipelineConfig &config, uint32_t width,
-                                     uint32_t height) {
+void GaemPipeline::defaultPipelineConfig(PipelineConfig &config, uint32_t width,
+                                         uint32_t height) {
   config.inputAssemblyInfo.sType =
       VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
   config.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "device.hpp"
+#include "gaem_device.hpp"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace gaem {
-class Model {
+class GaemModel {
 public:
   struct Vertex {
     glm::vec2 position;
@@ -19,16 +19,16 @@ public:
     getAtributeDescriptions();
   };
 
-  Model(Device &device, const std::vector<Vertex> &vertices);
-  ~Model();
-  Model(const Model &) = delete;
-  Model &operator=(const Model &) = delete;
+  GaemModel(GaemDevice &gaemDevice, const std::vector<Vertex> &vertices);
+  ~GaemModel();
+  GaemModel(const GaemModel &) = delete;
+  GaemModel &operator=(const GaemModel &) = delete;
 
   void bind(VkCommandBuffer commandBuffer);
   void draw(VkCommandBuffer commandBuffer);
 
 private:
-  Device &device;
+  GaemDevice &gaemDevice;
   VkBuffer vertexBuffer;
   VkDeviceMemory vertexBufferMemory;
   uint32_t vertexCount;
