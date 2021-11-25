@@ -1,4 +1,5 @@
 #include "pipeline.hpp"
+#include "model.hpp"
 
 #include "log.h"
 
@@ -74,13 +75,17 @@ void Pipeline::createGraphicsPipeline(const std::string &vertPath,
   shaderStages[1].pNext = nullptr;
   shaderStages[1].pSpecializationInfo = nullptr;
 
+  auto bindingDescriptions = Model::Vertex::getBindingDescriptions();
+  auto attributeDescriptions = Model::Vertex::getAtributeDescriptions();
   VkPipelineVertexInputStateCreateInfo vertInputInfo{};
   vertInputInfo.sType =
       VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-  vertInputInfo.vertexAttributeDescriptionCount = 0;
-  vertInputInfo.vertexBindingDescriptionCount = 0;
-  vertInputInfo.pVertexAttributeDescriptions = nullptr;
-  vertInputInfo.pVertexBindingDescriptions = nullptr;
+  vertInputInfo.vertexAttributeDescriptionCount =
+      static_cast<uint32_t>(attributeDescriptions.size());
+  vertInputInfo.vertexBindingDescriptionCount =
+      static_cast<uint32_t>(bindingDescriptions.size());
+  vertInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+  vertInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
 
   VkGraphicsPipelineCreateInfo pipelineInfo{};
   pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
