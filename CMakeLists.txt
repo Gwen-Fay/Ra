@@ -2,11 +2,12 @@ cmake_minimum_required(VERSION 3.18.4)
 
 project(Gaem VERSION 0.0
     DESCRIPTION "Its a Gaem"
-    LANGUAGES C CXX)
+    LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 find_package(Vulkan REQUIRED FATAL_ERROR)
 find_package(glm REQUIRED FATAL_ERROR)
@@ -16,10 +17,13 @@ add_subdirectory(vendor/glfw)
 add_subdirectory(vendor/catch2)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Test")
-    file(GLOB_RECURSE SRCS src/*.cpp src/*.h src/*.hpp)
-    list(FILTER SRCS EXCLUDE REGEX "main.cpp$")
+
+    # Build gaem library test
+
+    file(GLOB_RECURSE SRCS libgaem/*.cpp libgaem/*.hpp)
     add_executable(tests ${SRCS})
-        
+    target_include_directories(tests PUBLIC .) 
+
     target_include_directories(tests PUBLIC vendor/catch2/include)
     add_definitions(-O0)
     
@@ -29,19 +33,24 @@ if(CMAKE_BUILD_TYPE STREQUAL "Test")
     target_link_libraries(tests glfw ${GLFW_LIBRARIES})
     target_link_libraries(tests vulkan)
 else()
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        file(GLOB_RECURSE SRCS src/*.cpp src/*.h src/*.hpp)
-        list(FILTER SRCS EXCLUDE REGEX "test.cpp$")
-        add_executable(${PROJECT_NAME} ${SRCS})
 
-        target_link_libraries(${PROJECT_NAME} spdlog::spdlog)
-        add_definitions(-DDEBUG -O0 -g)
-    elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-        file(GLOB_RECURSE SRCS src/*.cpp src/*.h src/*.hpp)
+    # Build Gaem Library
+
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        file(GLOB_RECURSE SRCS libgaem/*.cpp libgaem/*.hpp)
         list(FILTER SRCS EXCLUDE REGEX "test.cpp$")
-        add_executable(${PROJECT_NAME} ${SRCS})
+        add_library(${PROJECT_NAME} SHARED ${SRCS})
+        target_include_directories(${PROJECT_NAME} PUBLIC .)
+        
+        target_link_libraries(${PROJECT_NAME} spdlog::spdlog)
+        add_definitions(-DDEBUG -DBUILD -O0 -g)
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+        file(GLOB_RECURSE SRCS libgaem/*.cpp libgaem/*.hpp)
+        list(FILTER SRCS EXCLUDE REGEX "test.cpp$")
+        add_library(${PROJECT_NAME} SHARED ${SRCS})
+        target_include_directories(${PROJECT_NAME} PUBLIC .)
     
-        add_definitions(-DRELEASE -O2)
+        add_definitions(-DRELEASE -DBUILD -O2)
     endif()
 
     target_include_directories(${PROJECT_NAME} PUBLIC vendor/spdlog/include)

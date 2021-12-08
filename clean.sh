@@ -1,3 +1,4 @@
 #!/bin/bash
-rm -R build
-rm -R bin
+rm -f -R build
+rm -f -R bin
+rm -f -R ../demoGaem/build
