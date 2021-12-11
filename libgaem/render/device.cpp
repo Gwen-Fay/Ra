@@ -1,3 +1,4 @@
+#include <libgaem/core.hpp>
 #include <libgaem/render/device.hpp>
 
 // std headers
@@ -14,7 +15,7 @@ debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
               VkDebugUtilsMessageTypeFlagsEXT messageType,
               const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
               void *pUserData) {
-  std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
+  LOG_CRITICAL("validation layer: {0}", pCallbackData->pMessage);
 
   return VK_FALSE;
 }
@@ -71,9 +72,9 @@ void GaemDevice::createInstance() {
 
   VkApplicationInfo appInfo = {};
   appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-  appInfo.pApplicationName = "LittleVulkanEngine App";
+  appInfo.pApplicationName = "Gaem App";
   appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-  appInfo.pEngineName = "No Engine";
+  appInfo.pEngineName = "Gaem";
   appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
   appInfo.apiVersion = VK_API_VERSION_1_0;
 
@@ -111,14 +112,21 @@ void GaemDevice::pickPhysicalDevice() {
   if (deviceCount == 0) {
     throw std::runtime_error("failed to find GPUs with Vulkan support!");
   }
-  std::cout << "Device count: " << deviceCount << std::endl;
+  LOG_INFO("Device count: {0}", deviceCount);
   std::vector<VkPhysicalDevice> devices(deviceCount);
   vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
   for (const auto &device : devices) {
     if (isDeviceSuitable(device)) {
       physicalDevice = device;
-      break;
+
+      // TODO pick most powerful device. Currently picks first discrete card.
+      auto props = VkPhysicalDeviceProperties{};
+      vkGetPhysicalDeviceProperties(device, &props);
+      if (props.deviceType ==
+          VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
+        break;
+      }
     }
   }
 
@@ -127,7 +135,7 @@ void GaemDevice::pickPhysicalDevice() {
   }
 
   vkGetPhysicalDeviceProperties(physicalDevice, &properties);
-  std::cout << "physical device: " << properties.deviceName << std::endl;
+  LOG_INFO("physical device: {0}", properties.deviceName);
 }
 
 void GaemDevice::createLogicalDevice() {
@@ -290,17 +298,17 @@ void GaemDevice::hasGflwRequiredInstanceExtensions() {
   vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount,
                                          extensions.data());
 
-  std::cout << "available extensions:" << std::endl;
+  LOG_INFO("available extensions:");
   std::unordered_set<std::string> available;
   for (const auto &extension : extensions) {
-    std::cout << "\t" << extension.extensionName << std::endl;
+    LOG_INFO("\t{0}", extension.extensionName);
     available.insert(extension.extensionName);
   }
 
-  std::cout << "required extensions:" << std::endl;
+  LOG_INFO("required extensions:");
   auto requiredExtensions = getRequiredExtensions();
   for (const auto &required : requiredExtensions) {
-    std::cout << "\t" << required << std::endl;
+    LOG_INFO("\t{0}", required);
     if (available.find(required) == available.end()) {
       throw std::runtime_error("Missing required glfw extension");
     }
