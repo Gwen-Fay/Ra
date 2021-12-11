@@ -118,8 +118,9 @@ void Application::drawFrame() {
 }
 
 void Application::loadModels() {
-  std::vector<GaemModel::Vertex> vertices{
-      {{0.0f, -0.5f}}, {{0.5f, 0.5f}}, {{-0.5f, 0.5f}}};
+  std::vector<GaemModel::Vertex> vertices{{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+                                          {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+                                          {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}};
 
   model = std::make_unique<GaemModel>(device, vertices);
 }
