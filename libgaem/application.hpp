@@ -35,12 +35,15 @@ private:
   void createPipelineLayout();
   void createPipeline();
   void createCommandBuffers();
+  void freeCommandBuffers();
   void drawFrame();
+  void recreateSwapChain();
+  void recordCommandBuffer(int imageIndex);
 
   WindowGlfw window{WIDTH, HEIGHT, "Hello Vulkan"};
   GaemDevice device{window};
-  GaemSwapChain gaemSwapChain{device, window.getExtent()};
-  std::unique_ptr<GaemPipeline> gaemPipeline;
+  std::unique_ptr<GaemSwapChain> swapChain;
+  std::unique_ptr<GaemPipeline> pipeline;
   VkPipelineLayout pipelineLayout;
   std::vector<VkCommandBuffer> commandBuffers;
   std::unique_ptr<GaemModel> model;

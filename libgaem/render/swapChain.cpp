@@ -13,6 +13,18 @@ namespace gaem {
 
 GaemSwapChain::GaemSwapChain(GaemDevice &deviceRef, VkExtent2D extent)
     : gaemDevice{deviceRef}, windowExtent{extent} {
+  init();
+}
+GaemSwapChain::GaemSwapChain(GaemDevice &deviceRef, VkExtent2D extent,
+                             std::shared_ptr<GaemSwapChain> previous)
+    : gaemDevice{deviceRef}, windowExtent{extent}, oldSwapChain{previous} {
+  init();
+
+  // clean up old swapChain because its no longer needed.
+  oldSwapChain = nullptr;
+}
+
+void GaemSwapChain::init() {
   createSwapChain();
   createImageViews();
   createRenderPass();
@@ -163,7 +175,8 @@ void GaemSwapChain::createSwapChain() {
   createInfo.presentMode = presentMode;
   createInfo.clipped = VK_TRUE;
 
-  createInfo.oldSwapchain = VK_NULL_HANDLE;
+  createInfo.oldSwapchain =
+      oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain;
 
   if (vkCreateSwapchainKHR(gaemDevice.device(), &createInfo, nullptr,
                            &swapChain) != VK_SUCCESS) {

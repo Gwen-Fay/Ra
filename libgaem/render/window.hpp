@@ -40,6 +40,8 @@ public:
   ~WindowGlfw();
   WindowGlfw(const WindowGlfw &) = delete;
   WindowGlfw &operator=(const WindowGlfw &) = delete;
+  bool wasFrameBufferResized() { return frameBufferResized; }
+  void resetWindowResizedFlag() { frameBufferResized = false; };
   void updateWindow() override;
   void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface) override;
   VkExtent2D getExtent() {
@@ -48,8 +50,11 @@ public:
 
 protected:
   int initWindow() override;
-  const int width;
-  const int height;
+  int width;
+  int height;
+  bool frameBufferResized = false;
+  static void frameBufferResizeCallback(GLFWwindow *window, int width,
+                                        int height);
   std::string windowName;
   GLFWwindow *window;
 };

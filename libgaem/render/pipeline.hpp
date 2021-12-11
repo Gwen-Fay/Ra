@@ -20,8 +20,6 @@ struct PipelineConfig {
   PipelineConfig &operator=(const PipelineConfig) = delete;
   PipelineConfig() = default;
 
-  VkViewport viewport;
-  VkRect2D scissor;
   VkPipelineViewportStateCreateInfo viewportInfo;
   VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
   VkPipelineRasterizationStateCreateInfo rasterizationInfo;
@@ -29,6 +27,8 @@ struct PipelineConfig {
   VkPipelineColorBlendAttachmentState colorBlendAttachment;
   VkPipelineColorBlendStateCreateInfo colorBlendInfo;
   VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
+  std::vector<VkDynamicState> dynamicStateEnables;
+  VkPipelineDynamicStateCreateInfo dynamicStateInfo;
   VkPipelineLayout pipelineLayout = nullptr;
   VkRenderPass renderPass = nullptr;
   uint32_t subpass = 0;
@@ -45,8 +45,7 @@ public:
 
   void bind(VkCommandBuffer commandBuffer);
 
-  static void defaultPipelineConfig(PipelineConfig &config, uint32_t width,
-                                    uint32_t height);
+  static void defaultPipelineConfigInfo(PipelineConfig &config);
 
 private:
   static std::vector<char> readFile(const std::string &filePath);

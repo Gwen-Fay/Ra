@@ -26,7 +26,7 @@ WindowGlfw::~WindowGlfw() {
 int WindowGlfw::initWindow() {
   if (glfwInit()) {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
     window =
         glfwCreateWindow(width, height, windowName.c_str(), nullptr, nullptr);
@@ -34,6 +34,10 @@ int WindowGlfw::initWindow() {
     if (!window) {
       return -1;
     }
+
+    glfwSetWindowUserPointer(window, this);
+    glfwSetFramebufferSizeCallback(window, frameBufferResizeCallback);
+
     return 0;
   } else {
     return -1;
@@ -52,6 +56,15 @@ void WindowGlfw::createWindowSurface(VkInstance instance,
     throw std::runtime_error("Failed to create runtime surface.");
     LOG_CRITICAL("FAILED to create runtime surface!");
   }
+}
+
+void WindowGlfw::frameBufferResizeCallback(GLFWwindow *window, int width,
+                                           int height) {
+  auto gaemWindow =
+      reinterpret_cast<WindowGlfw *>(glfwGetWindowUserPointer(window));
+  gaemWindow->frameBufferResized = true;
+  gaemWindow->width = width;
+  gaemWindow->height = height;
 }
 
 } // namespace gaem
