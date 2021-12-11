@@ -150,8 +150,8 @@ void Application::recordCommandBuffer(int imageIndex) {
 
   for (int j = 0; j < 4; j++) {
     SimplePushConstantData push{};
-    push.offset = {0.0f, -0.4f + j + 0.25f};
-    push.color = {0.0f, 0.0f, 0.2f + 0.2f * j};
+    push.offset = {0.0f, -0.4f + j * 0.25f};
+    push.color = {1.0f - 0.3f * j, 1.0f - 0.3f * j, 1.0f - 0.3f * j};
 
     vkCmdPushConstants(commandBuffers[imageIndex], pipelineLayout,
                        VK_SHADER_STAGE_VERTEX_BIT |
