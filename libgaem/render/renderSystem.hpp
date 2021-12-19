@@ -1,6 +1,6 @@
 /**
  *
- * This is a simple example RenderSystem which manages and updates a window
+ * This is a simple example RenderSystem which manages a pipeline
  *
  */
 

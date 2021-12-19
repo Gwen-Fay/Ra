@@ -26,11 +26,11 @@ void GaemRenderer::recreateSwapChain() {
   if (swapChain == nullptr) {
     swapChain = std::make_unique<GaemSwapChain>(device, extent);
   } else {
-    swapChain =
-        std::make_unique<GaemSwapChain>(device, extent, std::move(swapChain));
-    if (swapChain->imageCount() != commandBuffers.size()) {
-      freeCommandBuffers();
-      createCommandBuffers();
+    std::shared_ptr<GaemSwapChain> oldSwapChain = std::move(swapChain);
+    swapChain = std::make_unique<GaemSwapChain>(device, extent, oldSwapChain);
+
+    if (oldSwapChain->compareSwapFormat(*swapChain.get())) {
+      throw std::runtime_error("Swap chain image(or depth) format has changed");
     }
   }
 
@@ -39,7 +39,7 @@ void GaemRenderer::recreateSwapChain() {
 }
 
 void GaemRenderer::createCommandBuffers() {
-  commandBuffers.resize(swapChain->imageCount());
+  commandBuffers.resize(GaemSwapChain::MAX_FRAMES_IN_FLIGHT);
   VkCommandBufferAllocateInfo allocInfo{};
   allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
   allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -109,6 +109,8 @@ void GaemRenderer::endFrame() {
   }
 
   isFrameStarted = false;
+  currentFrameIndex =
+      (currentFrameIndex + 1) % GaemSwapChain::MAX_FRAMES_IN_FLIGHT;
 }
 void GaemRenderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer) {
   assert(isFrameStarted &&
