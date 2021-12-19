@@ -1,6 +1,6 @@
 /**
  *
- * This is a simple example RenderSystem which manages a pipeline
+ * This is a simple example GaemRenderSystem which manages a pipeline
  *
  */
 
@@ -16,12 +16,12 @@
 
 namespace gaem {
 
-class RenderSystem {
+class GaemRenderSystem {
 public:
-  RenderSystem(GaemDevice &device, VkRenderPass renderPass);
-  virtual ~RenderSystem();
-  RenderSystem(const RenderSystem &) = delete;
-  RenderSystem &operator=(const RenderSystem &) = delete;
+  GaemRenderSystem(GaemDevice &device, VkRenderPass renderPass);
+  virtual ~GaemRenderSystem();
+  GaemRenderSystem(const GaemRenderSystem &) = delete;
+  GaemRenderSystem &operator=(const GaemRenderSystem &) = delete;
   void renderModels(VkCommandBuffer commandBuffer,
                     std::unique_ptr<GaemModel> &model);
 

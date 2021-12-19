@@ -13,7 +13,7 @@ Application::~Application() {}
 
 void Application::run() {
 
-  RenderSystem renderSystem{device, renderer.getSwapChainRenderPass()};
+  GaemRenderSystem renderSystem{device, renderer.getSwapChainRenderPass()};
 
   while (window.isRunning()) {
     window.updateWindow();

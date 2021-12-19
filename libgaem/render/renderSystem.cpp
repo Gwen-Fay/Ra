@@ -11,17 +11,17 @@ struct SimplePushConstantData {
   alignas(16) glm::vec3 color;
 };
 
-RenderSystem::RenderSystem(GaemDevice &device, VkRenderPass renderPass)
+GaemRenderSystem::GaemRenderSystem(GaemDevice &device, VkRenderPass renderPass)
     : device{device} {
   createPipelineLayout();
   createPipeline(renderPass);
 }
 
-RenderSystem::~RenderSystem() {
+GaemRenderSystem::~GaemRenderSystem() {
   vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr);
 }
 
-void RenderSystem::createPipelineLayout() {
+void GaemRenderSystem::createPipelineLayout() {
   VkPushConstantRange pushConstantRange{};
   pushConstantRange.stageFlags =
       VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -40,7 +40,7 @@ void RenderSystem::createPipelineLayout() {
     throw std::runtime_error("failed to create pipeline layout");
   }
 }
-void RenderSystem::createPipeline(VkRenderPass renderPass) {
+void GaemRenderSystem::createPipeline(VkRenderPass renderPass) {
   assert(pipelineLayout != nullptr &&
          "Cannot create pipeline before pipelineLayout!");
 
@@ -53,8 +53,8 @@ void RenderSystem::createPipeline(VkRenderPass renderPass) {
 }
 
 // TODO make do something other than just show off push constants
-void RenderSystem::renderModels(VkCommandBuffer commandBuffer,
-                                std::unique_ptr<GaemModel> &model) {
+void GaemRenderSystem::renderModels(VkCommandBuffer commandBuffer,
+                                    std::unique_ptr<GaemModel> &model) {
   pipeline->bind(commandBuffer);
   model->bind(commandBuffer);
 
