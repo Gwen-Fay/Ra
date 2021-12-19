@@ -11,7 +11,8 @@ file(GLOB_RECURSE SRCS demogaem/*.cpp demogaem/*.hpp)
 add_executable(Demo ${SRCS})
 
 target_include_directories(Demo PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../libgaem)
-target_include_directories(Demo PUBLIC ${CMAKE_CURRENT_LIST_DIR}/vendor)
+target_include_directories(Demo PUBLIC 
+  ${CMAKE_CURRENT_LIST_DIR}/../libgaem/vendor/spdlog/include)
 
 target_link_libraries(Demo ${CMAKE_CURRENT_LIST_DIR}/lib/libGaem.so)
 
