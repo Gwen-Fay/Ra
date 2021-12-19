@@ -1,4 +1,4 @@
 #!/bin/bash
-rm -f -R build
-rm -f -R bin
-rm -f -R ../demogaem/build
+rm -f -R libgaem/build
+rm -f -R libgaem/bin
+rm -f -R demogaem/build

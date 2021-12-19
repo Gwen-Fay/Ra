@@ -51,6 +51,9 @@ Gaem
 #Build Folders
 [Bb][Uu][Ii][Ll][Dd]
 
+#Binary Folders
+[Bb][Ii][Nn]
+
 #ccls cache
 .ccls-cache
 
