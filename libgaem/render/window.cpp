@@ -8,7 +8,7 @@ namespace gaem {
 bool GaemWindow::isRunning() { return running; }
 
 WindowGlfw::WindowGlfw(int w, int h, std::string name)
-    : width{w}, height{h}, windowName{name} {
+    : GaemWindow(w, h, name) {
 
   if (initWindow() == 0) {
     LOG_INFO("initWindow Sucessful");

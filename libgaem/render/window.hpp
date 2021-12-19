@@ -15,7 +15,7 @@
 namespace gaem {
 class GaemWindow {
 public:
-  GaemWindow(){};
+  GaemWindow();
   virtual ~GaemWindow(){};
   GaemWindow(const GaemWindow &) = delete;
   GaemWindow &operator=(const GaemWindow &) = delete;
@@ -24,10 +24,24 @@ public:
   virtual void createWindowSurface(VkInstance instance,
                                    VkSurfaceKHR *surface) = 0;
 
+  VkExtent2D getExtent() {
+    return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
+  }
+
+  bool wasFrameBufferResized() { return frameBufferResized; }
+  void resetWindowResizedFlag() { frameBufferResized = false; };
+
 protected:
+  GaemWindow(int w, int h, std::string name)
+      : width(w), height(h), windowName(name){};
   virtual int initWindow() = 0;
 
+  int width;
+  int height;
+  std::string windowName;
+
   bool running = true;
+  bool frameBufferResized = false;
 };
 
 /**
@@ -40,22 +54,13 @@ public:
   ~WindowGlfw();
   WindowGlfw(const WindowGlfw &) = delete;
   WindowGlfw &operator=(const WindowGlfw &) = delete;
-  bool wasFrameBufferResized() { return frameBufferResized; }
-  void resetWindowResizedFlag() { frameBufferResized = false; };
   void updateWindow() override;
   void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface) override;
-  VkExtent2D getExtent() {
-    return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
-  }
 
 protected:
   int initWindow() override;
-  int width;
-  int height;
-  bool frameBufferResized = false;
   static void frameBufferResizeCallback(GLFWwindow *window, int width,
                                         int height);
-  std::string windowName;
   GLFWwindow *window;
 };
 } // namespace gaem
