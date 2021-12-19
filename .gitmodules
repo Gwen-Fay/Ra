@@ -4,3 +4,6 @@
 [submodule "libgaem/vendor/glfw"]
 	path = libgaem/vendor/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "libgaem/vendor/catch2"]
+	path = libgaem/vendor/catch2
+	url = https://github.com/catchorg/Catch2.git
