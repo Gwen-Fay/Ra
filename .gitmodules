@@ -1,3 +1,6 @@
 [submodule "libgaem/vendor/spdlog"]
 	path = libgaem/vendor/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "libgaem/vendor/glfw"]
+	path = libgaem/vendor/glfw
+	url = https://github.com/glfw/glfw.git
