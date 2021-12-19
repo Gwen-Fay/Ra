@@ -103,8 +103,7 @@ void GaemRenderer::endFrame() {
       window.wasFrameBufferResized()) {
     window.resetWindowResizedFlag();
     recreateSwapChain();
-  }
-  if (result != VK_SUCCESS) {
+  } else if (result != VK_SUCCESS) {
     LOG_CRITICAL("FAILED to present swap chain image!");
     throw std::runtime_error("failed to present swap chain image");
   }
