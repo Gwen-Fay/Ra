@@ -29,7 +29,7 @@ void GaemRenderer::recreateSwapChain() {
     std::shared_ptr<GaemSwapChain> oldSwapChain = std::move(swapChain);
     swapChain = std::make_unique<GaemSwapChain>(device, extent, oldSwapChain);
 
-    if (oldSwapChain->compareSwapFormat(*swapChain.get())) {
+    if (!oldSwapChain->compareSwapFormat(*swapChain.get())) {
       throw std::runtime_error("Swap chain image(or depth) format has changed");
     }
   }
