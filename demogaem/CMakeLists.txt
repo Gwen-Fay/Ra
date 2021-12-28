@@ -18,6 +18,6 @@ target_link_libraries(Demo ${CMAKE_CURRENT_LIST_DIR}/lib/libGaem.so)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(-DDEBUG -O0 -g)
-elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+else()
   add_definitions(-DRELEASE -O2)
 endif()

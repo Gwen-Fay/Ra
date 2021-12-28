@@ -44,7 +44,7 @@ else()
         
         target_link_libraries(${PROJECT_NAME} spdlog::spdlog)
         add_definitions(-DDEBUG -DBUILD -O0 -g)
-    elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+      else()
         file(GLOB_RECURSE SRCS libgaem/*.cpp libgaem/*.hpp)
         list(FILTER SRCS EXCLUDE REGEX "test.cpp$")
         add_library(${PROJECT_NAME} SHARED ${SRCS})
