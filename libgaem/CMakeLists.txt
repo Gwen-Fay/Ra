@@ -61,7 +61,7 @@ function(add_shader TARGET SHADER)
            DEPENDS ${current-shader-path}
            IMPLICIT_DEPENDS CXX ${current-shader-path}
            VERBATIM
-           WORKING_DIRECTORY ../..)
+           WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
     # Make sure our build depends on this output.
     set_source_files_properties(${current-output-path} PROPERTIES GENERATED TRUE)
