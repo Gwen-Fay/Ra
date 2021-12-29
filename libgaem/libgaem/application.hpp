@@ -17,7 +17,7 @@
 
 namespace gaem {
 
-class GAEM_API Application {
+class Application {
 public:
   Application();
   virtual ~Application();
