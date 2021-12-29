@@ -20,25 +20,18 @@ fi
 mkdir -p libgaem/libgaem/shaders/build_shaders
 mv libgaem/libgaem/shaders/*.spv libgaem/libgaem/shaders/build_shaders/
 
-echo "......................"
-echo "  ~Testing Gaem Lib~  "
-echo "......................"
-
-# TEST BUILD LIBRARY
-touch libgaem/CMakeLists.txt
-cmake -S libgaem -B libgaem/build/LinTest -D CMAKE_CXX_COMPILER=clang++\
-    -D CMAKE_BUILD_TYPE=Test -D PLATFORM="LINUX" || exit 1
-make -C libgaem/build/LinTest || exit 1
-libgaem/build/LinTest/tests || exit 1
-
 echo "-----------------------"
-echo "  ~Building Gaem Lib~  "
+echo "  ~Building LibGaem~  "
 echo "-----------------------"
 
 #DEBUG BUILD LIBRARY
 cmake -S libgaem -B libgaem/build/LinDebug -D CMAKE_CXX_COMPILER=clang++\
     -D CMAKE_BUILD_TYPE=Debug -D PLATFORM="LINUX" || exit 1
 make -C libgaem/build/LinDebug || exit 1
+cd libgaem/build/LinDebug
+ctest || exit 1
+cd ../../..
+
 mkdir -p libgaem/bin/LinDebug
 cp libgaem/build/LinDebug/libGaem.so libgaem/bin/LinDebug/libGaem.so
 rm -rf libgaem/bin/LinDebug/shaders
@@ -49,7 +42,7 @@ rm -f demoGaem/lib/libGaem.so
 cp libgaem/bin/LinDebug/libGaem.so demogaem/lib/libGaem.so
 
 echo "========================"
-echo "  ~building GaemDebug~  "
+echo "  ~Building DemoGaem~  "
 echo "========================"
 
 #DEBUG BUILD DEMO
