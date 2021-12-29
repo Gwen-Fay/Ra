@@ -9,15 +9,16 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-find_package(Vulkan REQUIRED FATAL_ERROR)
+find_package(Vulkan REQUIRED COMPONENTS glslc FATAL_ERROR)
 find_package(glm REQUIRED FATAL_ERROR)
+find_program(glslc_executable NAMES glslc HINTS Vulkan::glslc)
 
 add_subdirectory(vendor/spdlog)
 add_subdirectory(vendor/glfw)
 
+#grab libs and shaders
 set(SRCS "")
-
-#grab libs and handle shaders
+set(SHADERS "")
 add_subdirectory(libgaem)
 
 add_library(${PROJECT_NAME} SHARED ${SRCS})
@@ -42,6 +43,33 @@ if(PLATFORM STREQUAL "WINDOWS")
 elseif(PLATFORM STREQUAL "LINUX")
     add_definitions(-DLINUX)
 endif()
+
+#Shaders
+function(add_shader TARGET SHADER)
+    find_program(GLSLC glslc)
+
+    set(current-shader-path libgaem/shaders/${SHADER})
+    set(current-output-path ${CMAKE_BINARY_DIR}/shaders/${SHADER}.spv)
+
+    # Add a custom command to compile GLSL to SPIR-V.
+    get_filename_component(current-output-dir ${current-output-path} DIRECTORY)
+    file(MAKE_DIRECTORY ${current-output-dir})
+
+    add_custom_command(
+           OUTPUT ${current-output-path}
+           COMMAND ${GLSLC} -o ${current-output-path} ${current-shader-path}
+           DEPENDS ${current-shader-path}
+           IMPLICIT_DEPENDS CXX ${current-shader-path}
+           VERBATIM
+           WORKING_DIRECTORY ../..)
+
+    # Make sure our build depends on this output.
+    set_source_files_properties(${current-output-path} PROPERTIES GENERATED TRUE)
+    target_sources(${TARGET} PRIVATE ${current-output-path})
+endfunction(add_shader)
+
+add_shader(${PROJECT_NAME} example.vert)
+add_shader(${PROJECT_NAME} example.frag)
 
 #Testing
 enable_testing()

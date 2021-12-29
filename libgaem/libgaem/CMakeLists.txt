@@ -1,5 +1,5 @@
 # handles glslc
-#add_subdirectory(shaders)
+add_subdirectory(shaders)
 
 # src folders
 add_subdirectory(render)
