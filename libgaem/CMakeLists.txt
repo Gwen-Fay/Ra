@@ -40,4 +40,5 @@ enable_testing()
 add_executable(tester libgaem/test.cpp ${SRCS})
 target_include_directories(tester PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}) 
 
-add_test(Tester tester)
+set(TEST_BIN ${CMAKE_BINARY_DIR}/bin)
+add_test(Tester ${TEST_BIN}/tester)
