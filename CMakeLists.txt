@@ -19,9 +19,9 @@ else()
 find_package(Vulkan REQUIRED COMPONENTS glslc FATAL_ERROR)
 find_package(glm REQUIRED FATAL_ERROR)
 find_program(glslc_executable NAMES glslc HINTS Vulkan::glslc)
+add_subdirectory(vendor/glfw)
 endif()
 
-add_subdirectory(vendor/glfw)
 include_directories(vendor/spdlog/include)
 
 link_libraries(glfw ${GLFW_LIBRARIES})
