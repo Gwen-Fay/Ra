@@ -1,8 +1,12 @@
 # handles glslc
 add_subdirectory(shaders)
 
-# src folders
-add_subdirectory(render)
+if(CICD STREQUAL "TRUE")
+  #Github Ubuntu environment does not have glslc
+else()
+  # src folders
+  add_subdirectory(render)
+endif()
 
 set(DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(SRCS ${SRCS}
