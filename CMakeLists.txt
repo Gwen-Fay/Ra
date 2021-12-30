@@ -14,6 +14,8 @@ set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 
 if(CICD STREQUAL "TRUE")
+
+else()
 find_package(Vulkan REQUIRED COMPONENTS glslc FATAL_ERROR)
 find_package(glm REQUIRED FATAL_ERROR)
 find_program(glslc_executable NAMES glslc HINTS Vulkan::glslc)
