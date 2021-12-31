@@ -1,4 +1,4 @@
-#TODO make this actually load shaders. currently this file does nothing.
+set(DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(SHADERS ${SHADERS}
-  example.vert example.frag
+  ${DIR}/example.vert ${DIR}/example.frag
   PARENT_SCOPE)

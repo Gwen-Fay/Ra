@@ -13,20 +13,15 @@ set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 
-if(CICD STREQUAL "TRUE")
-  #Github Ubuntu environment does not have vulkan suport
-else()
-  find_package(Vulkan REQUIRED COMPONENTS glslc FATAL_ERROR)
-  find_package(glm REQUIRED FATAL_ERROR)
-  find_program(glslc_executable NAMES glslc HINTS Vulkan::glslc)
-  add_subdirectory(vendor/glfw)
+find_package(Vulkan REQUIRED COMPONENTS glslc FATAL_ERROR)
+find_package(glm REQUIRED FATAL_ERROR)
+find_program(glslc_executable NAMES glslc HINTS Vulkan::glslc)
 
-  include_directories(vendor/spdlog/include)
+add_subdirectory(vendor/glfw)
+include_directories(vendor/spdlog/include)
 
-  link_libraries(glfw ${GLFW_LIBRARIES})
-  link_libraries(vulkan)
-endif()
-
+link_libraries(glfw ${GLFW_LIBRARIES})
+link_libraries(vulkan)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_subdirectory(vendor/spdlog)
@@ -45,9 +40,5 @@ endif()
 #Compile and test libgaem
 add_subdirectory(libgaem)
 
-if(CICD STREQUAL "TRUE")
-  #Don't build executable, only tests
-else()
-  #compile demogaem
-  add_subdirectory(demogaem)
-endif()
+#compile demogaem
+add_subdirectory(demogaem)
