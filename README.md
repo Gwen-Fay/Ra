@@ -1,5 +1,5 @@
-# Gaem
-Vulkan game engine I'm working on
+# HelloTriangles
+This branch has a basic Vulkan setup. I am keeping this so I can resuse this in future projects.
 
 # Build Instructions
 in the root directory run:
