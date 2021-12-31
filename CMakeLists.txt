@@ -17,10 +17,10 @@ if(CICD STREQUAL "TRUE")
   #Github Ubuntu envorionment does not have vulkan suport
 else()
   find_package(Vulkan REQUIRED COMPONENTS glslc FATAL_ERROR)
-  find_package(glm REQUIRED FATAL_ERROR)
   find_program(glslc_executable NAMES glslc HINTS Vulkan::glslc)
   add_subdirectory(vendor/glfw)
 endif()
+find_package(glm REQUIRED FATAL_ERROR)
 
 include_directories(vendor/spdlog/include)
 
