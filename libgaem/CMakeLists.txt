@@ -31,8 +31,13 @@ function(add_shader TARGET SHADER)
     target_sources(${TARGET} PRIVATE ${current-output-path})
 endfunction(add_shader)
 
-add_shader(${PROJECT_NAME} example.vert)
-add_shader(${PROJECT_NAME} example.frag)
+if(CICD STREQUAL "TRUE")
+  #Github ubuntu environment does not have glslc
+else()  
+  #TODO make this load from SHADERS
+  add_shader(${PROJECT_NAME} example.vert)
+  add_shader(${PROJECT_NAME} example.frag)
+endif()
 
 #Testing
 enable_testing()
