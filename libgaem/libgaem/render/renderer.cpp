@@ -71,7 +71,6 @@ VkCommandBuffer GaemRenderer::beginFrame() {
   }
 
   if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-    // TODO handle this differently, it can happen when window is resized
     LOG_CRITICAL("FAILED to acquire swap chain image!");
     throw std::runtime_error("failed to acquire swap chain image");
   }

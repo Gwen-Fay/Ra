@@ -3,8 +3,6 @@
  * Pipeline
  *
  * vulkan render pipeline abstraction
- *
- * TODO actually use shaders it reads from
  */
 
 #pragma once
