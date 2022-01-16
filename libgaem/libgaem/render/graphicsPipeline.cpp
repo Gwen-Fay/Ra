@@ -1,6 +1,6 @@
 #include <libgaem/core.hpp>
+#include <libgaem/render/graphicsPipeline.hpp>
 #include <libgaem/render/model.hpp>
-#include <libgaem/render/pipeline.hpp>
 
 #include <cassert>
 #include <fstream>
@@ -9,22 +9,23 @@
 
 namespace gaem {
 
-GaemPipeline::GaemPipeline(GaemDevice &gaemDevice, const std::string &vertName,
-                           const std::string &fragName,
-                           const PipelineConfig &config)
+GaemGraphicsPipeline::GaemGraphicsPipeline(GaemDevice &gaemDevice,
+                                           const std::string &vertName,
+                                           const std::string &fragName,
+                                           const GraphicsPipelineConfig &config)
     : gaemDevice{gaemDevice} {
 
   createGraphicsPipeline(SHADER_PATH + vertName + SHADER_EXT,
                          SHADER_PATH + fragName + SHADER_EXT, config);
 }
 
-GaemPipeline::~GaemPipeline() {
+GaemGraphicsPipeline::~GaemGraphicsPipeline() {
   vkDestroyShaderModule(gaemDevice.device(), vertShaderModule, nullptr);
   vkDestroyShaderModule(gaemDevice.device(), fragShaderModule, nullptr);
   vkDestroyPipeline(gaemDevice.device(), graphicsPipeline, nullptr);
 }
 
-std::vector<char> GaemPipeline::readFile(const std::string &filePath) {
+std::vector<char> GaemGraphicsPipeline::readFile(const std::string &filePath) {
 
   std::ifstream file{filePath, std::ios::ate | std::ios::binary};
 
@@ -43,9 +44,9 @@ std::vector<char> GaemPipeline::readFile(const std::string &filePath) {
   return buffer;
 }
 
-void GaemPipeline::createGraphicsPipeline(const std::string &vertPath,
-                                          const std::string &fragPath,
-                                          const PipelineConfig &config) {
+void GaemGraphicsPipeline::createGraphicsPipeline(
+    const std::string &vertPath, const std::string &fragPath,
+    const GraphicsPipelineConfig &config) {
   assert(
       config.pipelineLayout != VK_NULL_HANDLE &&
       "Cannot create graphics pipeline::no pipelineLayout provided in config");
@@ -115,8 +116,8 @@ void GaemPipeline::createGraphicsPipeline(const std::string &vertPath,
   }
 }
 
-void GaemPipeline::createShaderModule(const std::vector<char> &code,
-                                      VkShaderModule *shaderModule) {
+void GaemGraphicsPipeline::createShaderModule(const std::vector<char> &code,
+                                              VkShaderModule *shaderModule) {
   VkShaderModuleCreateInfo createInfo{};
   createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
   createInfo.codeSize = code.size();
@@ -129,12 +130,13 @@ void GaemPipeline::createShaderModule(const std::vector<char> &code,
   }
 }
 
-void GaemPipeline::bind(VkCommandBuffer commandBuffer) {
+void GaemGraphicsPipeline::bind(VkCommandBuffer commandBuffer) {
   vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                     graphicsPipeline);
 }
 
-void GaemPipeline::defaultPipelineConfigInfo(PipelineConfig &config) {
+void GaemGraphicsPipeline::defaultGraphicsPipelineConfigInfo(
+    GraphicsPipelineConfig &config) {
   config.inputAssemblyInfo.sType =
       VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
   config.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;

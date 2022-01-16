@@ -13,10 +13,10 @@
 
 namespace gaem {
 
-struct PipelineConfig {
-  PipelineConfig(const PipelineConfig &) = delete;
-  PipelineConfig &operator=(const PipelineConfig) = delete;
-  PipelineConfig() = default;
+struct GraphicsPipelineConfig {
+  GraphicsPipelineConfig(const GraphicsPipelineConfig &) = delete;
+  GraphicsPipelineConfig &operator=(const GraphicsPipelineConfig) = delete;
+  GraphicsPipelineConfig() = default;
 
   VkPipelineViewportStateCreateInfo viewportInfo;
   VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
@@ -32,24 +32,25 @@ struct PipelineConfig {
   uint32_t subpass = 0;
 };
 
-class GaemPipeline {
+class GaemGraphicsPipeline {
 public:
-  GaemPipeline(GaemDevice &gaemDevice, const std::string &vertName,
-               const std::string &fragName, const PipelineConfig &config);
-  ~GaemPipeline();
+  GaemGraphicsPipeline(GaemDevice &gaemDevice, const std::string &vertName,
+                       const std::string &fragName,
+                       const GraphicsPipelineConfig &config);
+  ~GaemGraphicsPipeline();
 
-  GaemPipeline(const GaemPipeline &) = delete;
-  void operator=(const GaemPipeline &) = delete;
+  GaemGraphicsPipeline(const GaemGraphicsPipeline &) = delete;
+  void operator=(const GaemGraphicsPipeline &) = delete;
 
   void bind(VkCommandBuffer commandBuffer);
 
-  static void defaultPipelineConfigInfo(PipelineConfig &config);
+  static void defaultGraphicsPipelineConfigInfo(GraphicsPipelineConfig &config);
 
 private:
   static std::vector<char> readFile(const std::string &filePath);
   void createGraphicsPipeline(const std::string &vertPath,
                               const std::string &fragPath,
-                              const PipelineConfig &config);
+                              const GraphicsPipelineConfig &config);
 
   void createShaderModule(const std::vector<char> &code,
                           VkShaderModule *shaderModule);

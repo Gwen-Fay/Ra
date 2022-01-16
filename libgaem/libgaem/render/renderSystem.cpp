@@ -44,12 +44,12 @@ void GaemRenderSystem::createPipeline(VkRenderPass renderPass) {
   assert(pipelineLayout != nullptr &&
          "Cannot create pipeline before pipelineLayout!");
 
-  PipelineConfig pipelineConfig{};
-  GaemPipeline::defaultPipelineConfigInfo(pipelineConfig);
+  GraphicsPipelineConfig pipelineConfig{};
+  GaemGraphicsPipeline::defaultGraphicsPipelineConfigInfo(pipelineConfig);
   pipelineConfig.renderPass = renderPass;
   pipelineConfig.pipelineLayout = pipelineLayout;
-  pipeline = std::make_unique<GaemPipeline>(device, "example.vert",
-                                            "example.frag", pipelineConfig);
+  pipeline = std::make_unique<GaemGraphicsPipeline>(
+      device, "example.vert", "example.frag", pipelineConfig);
 }
 
 // TODO make do something other than just show off push constants

@@ -8,8 +8,8 @@
 
 #include <libgaem/core.hpp>
 #include <libgaem/render/device.hpp>
+#include <libgaem/render/graphicsPipeline.hpp>
 #include <libgaem/render/model.hpp>
-#include <libgaem/render/pipeline.hpp>
 
 #include <memory>
 #include <vector>
@@ -31,7 +31,7 @@ private:
 
   GaemDevice &device;
 
-  std::unique_ptr<GaemPipeline> pipeline;
+  std::unique_ptr<GaemGraphicsPipeline> pipeline;
   VkPipelineLayout pipelineLayout;
 };
 
