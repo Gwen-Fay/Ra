@@ -27,8 +27,10 @@ struct SwapChainSupportDetails {
 struct QueueFamilyIndices {
   uint32_t graphicsFamily;
   uint32_t presentFamily;
+  uint32_t computeFamily;
   bool graphicsFamilyHasValue = false;
   bool presentFamilyHasValue = false;
+  bool computeFamilyHasValue = false;
   bool isComplete() { return graphicsFamilyHasValue && presentFamilyHasValue; }
 };
 
@@ -49,11 +51,13 @@ public:
   GaemDevice(GaemDevice &&) = delete;
   GaemDevice &operator=(GaemDevice &&) = delete;
 
-  VkCommandPool getCommandPool() { return commandPool; }
+  VkCommandPool getGraphicsCommandPool() { return graphicsCommandPool; }
+  VkCommandPool getComputeCommandPool() { return computeCommandPool; }
   VkDevice device() { return device_; }
   VkSurfaceKHR surface() { return surface_; }
   VkQueue graphicsQueue() { return graphicsQueue_; }
   VkQueue presentQueue() { return presentQueue_; }
+  VkQueue computeQueue() { return computeQueue_; }
 
   SwapChainSupportDetails getSwapChainSupport() {
     return querySwapChainSupport(physicalDevice);
@@ -71,11 +75,14 @@ public:
   void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
                     VkMemoryPropertyFlags properties, VkBuffer &buffer,
                     VkDeviceMemory &bufferMemory);
-  VkCommandBuffer beginSingleTimeCommands();
-  void endSingleTimeCommands(VkCommandBuffer commandBuffer);
-  void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+  VkCommandBuffer beginSingleTimeCommands(VkCommandPool &commandPool);
+  void endSingleTimeCommands(VkCommandBuffer commandBuffer,
+                             VkCommandPool &commandPool);
+  void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size,
+                  VkCommandPool &commandPool);
   void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width,
-                         uint32_t height, uint32_t layerCount);
+                         uint32_t height, uint32_t layerCount,
+                         VkCommandPool &commandPool);
 
   void createImageWithInfo(const VkImageCreateInfo &imageInfo,
                            VkMemoryPropertyFlags properties, VkImage &image,
@@ -89,7 +96,7 @@ private:
   void createSurface();
   void pickPhysicalDevice();
   void createLogicalDevice();
-  void createCommandPool();
+  void createCommandPools();
 
   // helper functions
   bool isDeviceSuitable(VkPhysicalDevice device);
@@ -106,12 +113,14 @@ private:
   VkDebugUtilsMessengerEXT debugMessenger;
   VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
   GaemWindow &gaemWindow;
-  VkCommandPool commandPool;
+  VkCommandPool graphicsCommandPool;
+  VkCommandPool computeCommandPool;
 
   VkDevice device_;
   VkSurfaceKHR surface_;
   VkQueue graphicsQueue_;
   VkQueue presentQueue_;
+  VkQueue computeQueue_;
 
   const std::vector<const char *> validationLayers = {
       "VK_LAYER_KHRONOS_validation"};

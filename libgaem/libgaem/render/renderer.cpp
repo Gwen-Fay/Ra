@@ -43,7 +43,7 @@ void GaemRenderer::createCommandBuffers() {
   VkCommandBufferAllocateInfo allocInfo{};
   allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
   allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-  allocInfo.commandPool = device.getCommandPool();
+  allocInfo.commandPool = device.getGraphicsCommandPool();
   allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
 
   if (vkAllocateCommandBuffers(device.device(), &allocInfo,
@@ -54,7 +54,7 @@ void GaemRenderer::createCommandBuffers() {
 }
 
 void GaemRenderer::freeCommandBuffers() {
-  vkFreeCommandBuffers(device.device(), device.getCommandPool(),
+  vkFreeCommandBuffers(device.device(), device.getGraphicsCommandPool(),
                        static_cast<uint32_t>(commandBuffers.size()),
                        commandBuffers.data());
   commandBuffers.clear();

@@ -50,11 +50,12 @@ GaemDevice::GaemDevice(GaemWindow &gaemWindow) : gaemWindow{gaemWindow} {
   createSurface();
   pickPhysicalDevice();
   createLogicalDevice();
-  createCommandPool();
+  createCommandPools();
 }
 
 GaemDevice::~GaemDevice() {
-  vkDestroyCommandPool(device_, commandPool, nullptr);
+  vkDestroyCommandPool(device_, graphicsCommandPool, nullptr);
+  vkDestroyCommandPool(device_, computeCommandPool, nullptr);
   vkDestroyDevice(device_, nullptr);
 
   if (enableValidationLayers) {
@@ -142,8 +143,8 @@ void GaemDevice::createLogicalDevice() {
   QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
   std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-  std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily,
-                                            indices.presentFamily};
+  std::set<uint32_t> uniqueQueueFamilies = {
+      indices.graphicsFamily, indices.presentFamily, indices.computeFamily};
 
   float queuePriority = 1.0f;
   for (uint32_t queueFamily : uniqueQueueFamilies) {
@@ -187,20 +188,32 @@ void GaemDevice::createLogicalDevice() {
 
   vkGetDeviceQueue(device_, indices.graphicsFamily, 0, &graphicsQueue_);
   vkGetDeviceQueue(device_, indices.presentFamily, 0, &presentQueue_);
+  vkGetDeviceQueue(device_, indices.computeFamily, 0, &computeQueue_);
 }
 
-void GaemDevice::createCommandPool() {
+void GaemDevice::createCommandPools() {
   QueueFamilyIndices queueFamilyIndices = findPhysicalQueueFamilies();
 
-  VkCommandPoolCreateInfo poolInfo = {};
-  poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-  poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily;
-  poolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT |
-                   VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+  VkCommandPoolCreateInfo graphicsPoolInfo = {};
+  graphicsPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+  graphicsPoolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily;
+  graphicsPoolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT |
+                           VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-  if (vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool) !=
-      VK_SUCCESS) {
-    throw std::runtime_error("failed to create command pool!");
+  if (vkCreateCommandPool(device_, &graphicsPoolInfo, nullptr,
+                          &graphicsCommandPool) != VK_SUCCESS) {
+    throw std::runtime_error("failed to create graphics command pool!");
+  }
+
+  VkCommandPoolCreateInfo computePoolInfo = {};
+  computePoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+  computePoolInfo.queueFamilyIndex = queueFamilyIndices.computeFamily;
+  computePoolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT |
+                          VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+
+  if (vkCreateCommandPool(device_, &computePoolInfo, nullptr,
+                          &computeCommandPool) != VK_SUCCESS) {
+    throw std::runtime_error("failed to create compute command pool!");
   }
 }
 
@@ -344,6 +357,8 @@ QueueFamilyIndices GaemDevice::findQueueFamilies(VkPhysicalDevice device) {
   vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount,
                                            queueFamilies.data());
 
+  int backupCompute = -1;
+
   int i = 0;
   for (const auto &queueFamily : queueFamilies) {
     if (queueFamily.queueCount > 0 &&
@@ -357,7 +372,22 @@ QueueFamilyIndices GaemDevice::findQueueFamilies(VkPhysicalDevice device) {
       indices.presentFamily = i;
       indices.presentFamilyHasValue = true;
     }
+    if (queueFamily.queueCount > 0 &&
+        queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT &&
+        !(queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)) {
+      indices.computeFamily = i;
+      indices.computeFamilyHasValue = true;
+    }
+
+    if (queueFamily.queueCount > 0 &&
+        queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT) {
+      backupCompute = i;
+    }
     if (indices.isComplete()) {
+      if (!indices.computeFamilyHasValue && backupCompute >= 0) {
+        indices.computeFamily = backupCompute;
+        indices.computeFamilyHasValue = true;
+      }
       break;
     }
 
@@ -365,6 +395,8 @@ QueueFamilyIndices GaemDevice::findQueueFamilies(VkPhysicalDevice device) {
   }
 
   return indices;
+  indices.computeFamily = backupCompute;
+  indices.computeFamilyHasValue = true;
 }
 
 SwapChainSupportDetails
@@ -457,7 +489,8 @@ void GaemDevice::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
   vkBindBufferMemory(device_, buffer, bufferMemory, 0);
 }
 
-VkCommandBuffer GaemDevice::beginSingleTimeCommands() {
+VkCommandBuffer
+GaemDevice::beginSingleTimeCommands(VkCommandPool &commandPool) {
   VkCommandBufferAllocateInfo allocInfo{};
   allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
   allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -475,7 +508,8 @@ VkCommandBuffer GaemDevice::beginSingleTimeCommands() {
   return commandBuffer;
 }
 
-void GaemDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
+void GaemDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer,
+                                       VkCommandPool &commandPool) {
   vkEndCommandBuffer(commandBuffer);
 
   VkSubmitInfo submitInfo{};
@@ -490,8 +524,8 @@ void GaemDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
 }
 
 void GaemDevice::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
-                            VkDeviceSize size) {
-  VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+                            VkDeviceSize size, VkCommandPool &commandPool) {
+  VkCommandBuffer commandBuffer = beginSingleTimeCommands(commandPool);
 
   VkBufferCopy copyRegion{};
   copyRegion.srcOffset = 0; // Optional
@@ -499,13 +533,14 @@ void GaemDevice::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
   copyRegion.size = size;
   vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
 
-  endSingleTimeCommands(commandBuffer);
+  endSingleTimeCommands(commandBuffer, commandPool);
 }
 
 void GaemDevice::copyBufferToImage(VkBuffer buffer, VkImage image,
                                    uint32_t width, uint32_t height,
-                                   uint32_t layerCount) {
-  VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+                                   uint32_t layerCount,
+                                   VkCommandPool &commandPool) {
+  VkCommandBuffer commandBuffer = beginSingleTimeCommands(commandPool);
 
   VkBufferImageCopy region{};
   region.bufferOffset = 0;
@@ -522,7 +557,7 @@ void GaemDevice::copyBufferToImage(VkBuffer buffer, VkImage image,
 
   vkCmdCopyBufferToImage(commandBuffer, buffer, image,
                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
-  endSingleTimeCommands(commandBuffer);
+  endSingleTimeCommands(commandBuffer, commandPool);
 }
 
 void GaemDevice::createImageWithInfo(const VkImageCreateInfo &imageInfo,
